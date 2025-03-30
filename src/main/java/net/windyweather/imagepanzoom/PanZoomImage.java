@@ -28,6 +28,8 @@ import javafx.stage.Stage;
 /** @see https://stackoverflow.com/a/73328643/230513 */
 public class PanZoomImage extends Application {
 
+    static double dZoomScale = 1.0;
+
     public static void printSysOut( String str ) {
         System.out.println(str);
     }
@@ -37,7 +39,7 @@ public class PanZoomImage extends Application {
         /*
 
          */
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        printSysOut("Working Directory = " + System.getProperty("user.dir"));
 
         /*
             Let's start the FileChooser in the Current Working Directory
@@ -105,6 +107,8 @@ public class PanZoomImage extends Application {
         /*
             Now set up a scroll wheel based zoom
          */
+
+
         view.setOnScroll(
                 new EventHandler<ScrollEvent>() {
                     @Override
@@ -116,7 +120,7 @@ public class PanZoomImage extends Application {
                         Don't zoom forever. Just ignore it after
                         a while.
                      */
-                        double dScale = view.getScaleX();
+                        double dScale = dZoomScale;
                         if (deltaY > 0.0 && dScale > 10.0) {
                             printSysOut("Don't scale too big");
                             //event.consume();
@@ -136,21 +140,54 @@ public class PanZoomImage extends Application {
             /*
                 What happens if we don't restore x and y?
              */
+                        /*
+                            Let's zoom image with setFitWidth rather than setScale
+                            but save our zoom so we can report it
+                         */
+                        dZoomScale = dZoomScale * zoomFactor;
+                        slider.setValue( dZoomScale);
+                        view.setFitWidth(image.getWidth() * zoomFactor);
 
-                        view.setScaleX(view.getScaleX() * zoomFactor);
-                        view.setScaleY(view.getScaleY() * zoomFactor);
-                        String scaleReport = String.format("ImageView scale factors [%.3f, %.3f]", view.getScaleX(), view.getScaleY());
+                        String scaleReport = String.format("ImageView scale factor %.3f", view.getScaleX() * dZoomScale);
+
+
+
+                        if (false) {
+                            view.setScaleX(view.getScaleX() * zoomFactor);
+                            view.setScaleY(view.getScaleY() * zoomFactor);
+                            //String scaleReport = String.format("ImageView scale factors [%.3f, %.3f]", view.getScaleX(), view.getScaleY());
+                        }
 
                         printSysOut(scaleReport);
                         /*
                             Lets try this here and see if that fixes the pan after zoom
                          */
+                        x = sp.getHvalue();
+                        y = sp.getVvalue();
 
-
-                        view.setFitWidth(image.getWidth() * zoomFactor);
+                        /*
+                            ********************************************************************
+                            *************** The following statement appears to have made it work
+                            * Now wheel zooming preserves panning to the corners
+                            ********************************************************************
+                         */
+                        view.setFitWidth(image.getWidth() * dZoomScale);
+            /*
+                What happens if we don't restore x and y?
+             */
                         if (true) {
                             sp.setHvalue(x);
                             sp.setVvalue(y);
+                        }
+                        /*
+                            we already did this above
+                         */
+                        if ( false ) {
+                            view.setFitWidth(image.getWidth() * zoomFactor);
+                            if (true) {
+                                sp.setHvalue(x);
+                                sp.setVvalue(y);
+                            }
                         }
                     }
                 }
