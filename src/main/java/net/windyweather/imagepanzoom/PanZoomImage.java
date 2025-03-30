@@ -13,18 +13,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 /** @see https://stackoverflow.com/a/73328643/230513 */
 public class PanZoomImage extends Application {
+
+    public static void printSysOut( String str ) {
+        System.out.println(str);
+    }
 
     @Override
     public void start(Stage stage) throws FileNotFoundException {
@@ -89,12 +95,70 @@ public class PanZoomImage extends Application {
             /*
                 What happens if we don't restore x and y?
              */
-            if (false) {
+            if (true) {
                 sp.setHvalue(x);
                 sp.setVvalue(y);
             }
         });
 
+
+        /*
+            Now set up a scroll wheel based zoom
+         */
+        view.setOnScroll(
+                new EventHandler<ScrollEvent>() {
+                    @Override
+                    public void handle(ScrollEvent event) {
+                        event.consume();
+                        double zoomFactor = 1.05;
+                        double deltaY = event.getDeltaY();
+                    /*
+                        Don't zoom forever. Just ignore it after
+                        a while.
+                     */
+                        double dScale = view.getScaleX();
+                        if (deltaY > 0.0 && dScale > 10.0) {
+                            printSysOut("Don't scale too big");
+                            //event.consume();
+                            return;
+                        } else if (deltaY < 0.0 && dScale < 0.20) {
+                            printSysOut("Don't scale too small");
+                            //event.consume();
+                            return;
+                        }
+
+                        if (deltaY < 0) {
+                            zoomFactor = 0.95;
+                        }
+
+                        var x = sp.getHvalue();
+                        var y = sp.getVvalue();
+            /*
+                What happens if we don't restore x and y?
+             */
+
+                        view.setScaleX(view.getScaleX() * zoomFactor);
+                        view.setScaleY(view.getScaleY() * zoomFactor);
+                        String scaleReport = String.format("ImageView scale factors [%.3f, %.3f]", view.getScaleX(), view.getScaleY());
+
+                        printSysOut(scaleReport);
+                        /*
+                            Lets try this here and see if that fixes the pan after zoom
+                         */
+
+
+                        view.setFitWidth(image.getWidth() * zoomFactor);
+                        if (true) {
+                            sp.setHvalue(x);
+                            sp.setVvalue(y);
+                        }
+                    }
+                }
+        );
+
+        /*
+            Carry on with the rest of start
+         */
         var root = new BorderPane(sp);
         root.setBottom(slider);
 
