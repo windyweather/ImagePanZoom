@@ -55,7 +55,7 @@ public class PanZoomImage extends Application {
         File file = fileChooser.showOpenDialog(stage);
         if (file == null) {
             printSysOut("No Image File chosen");
-            return;
+            throw new FileNotFoundException();
         }
 
         var image = new Image(new FileInputStream(file));
