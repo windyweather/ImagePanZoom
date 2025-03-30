@@ -45,13 +45,16 @@ public class PanZoomImage extends Application {
             Let's start the FileChooser in the Current Working Directory
          */
         var fileChooser = new FileChooser();
-        String sCWD = System.getProperty("user.dir");
+        /*
+            Default the file chooser to the sample images folder
+         */
+        String sCWD = System.getProperty("user.dir") + "\\zzTestImages";
         File fCWD = new File( sCWD );
         fileChooser.setInitialDirectory( fCWD );
 
         File file = fileChooser.showOpenDialog(stage);
         if (file == null) {
-            System.out.println("No Image File chosen");
+            printSysOut("No Image File chosen");
             return;
         }
 
