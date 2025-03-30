@@ -97,6 +97,8 @@ public class PanZoomImage extends Application {
 
         var root = new BorderPane(sp);
         root.setBottom(slider);
+
+        stage.setTitle("Image Pan Zoom");
         stage.setScene(new Scene(root, 800, 600));
         stage.show();
 
