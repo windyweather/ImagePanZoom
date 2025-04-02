@@ -1,5 +1,5 @@
-/*
-/** @see https://stackoverflow.com/questions/48687994/zooming-an-image-in-imageview-javafx/73328643#73328643
+
+/* @see https://stackoverflow.com/questions/48687994/zooming-an-image-in-imageview-javafx/73328643#73328643
 While this complete example illustrates zooming and panning an image using sliders, the variant below focuses on a more basic approach that may be easier to adapt to other use cases. It leverages ImageView scaling to zoom and ScrollPane mouse handing to pan.
 
 In summary, the application constructs an ImageView from an Image read from the selected file, altering the cursor to indicate dragging with a closed hand. The ImageView is then used to construct a ScrollPane, for which the pannable property is enabled; scrolling starts out centered. A Slider controls the zoom level, and its listener alters the view's fitWidth property accordingly, while preserving the image's aspect ratio. By saving and restoring the scroll pane's scroll bar settings, zooming stays centered on the view.
@@ -25,7 +25,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-/** @see https://stackoverflow.com/a/73328643/230513 */
+/** @see <a href="https://stackoverflow.com/a/73328643/230513"></a>*/
 public class PanZoomImage extends Application {
 
     static double dZoomScale = 1.0;
@@ -50,6 +50,13 @@ public class PanZoomImage extends Application {
          */
         String sCWD = System.getProperty("user.dir") + "\\zzTestImages";
         File fCWD = new File( sCWD );
+        /*
+            If we are running a JAR, then not sure what is up
+            so try one more time.
+         */
+        if ( !fCWD.exists() ) {
+            fCWD = new File( System.getProperty("user.dir"));
+        }
         fileChooser.setInitialDirectory( fCWD );
 
         File file = fileChooser.showOpenDialog(stage);
@@ -104,6 +111,10 @@ public class PanZoomImage extends Application {
                 sp.setHvalue(x);
                 sp.setVvalue(y);
             }
+            /*
+                Report the zoom factor just for grins
+             */
+            printSysOut(String.format("Zoom factor %.3f", newV.doubleValue() ));
         });
 
 
