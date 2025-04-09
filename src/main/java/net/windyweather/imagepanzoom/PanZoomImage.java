@@ -174,11 +174,15 @@ public class PanZoomImage extends Application {
 
                         printSysOut(scaleReport);
                         /*
+                            Don't mess with the values we saved from before
+                         */
+                        if ( false ) {
+                        /*
                             Lets try this here and see if that fixes the pan after zoom
                          */
-                        x = sp.getHvalue();
-                        y = sp.getVvalue();
-
+                            x = sp.getHvalue();
+                            y = sp.getVvalue();
+                        }
                         /*
                             ********************************************************************
                             *************** The following statement appears to have made it work
